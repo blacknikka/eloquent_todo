@@ -1,6 +1,6 @@
 # envのコピー
 cat ./laradock/env-example ./etc/laradock.env-example > ./laradock/.env
-# cp ./etc/laravel.env.sample ./src/.env
+cp ./etc/laravel.env.sample ./src/.env
 
 # # docker up
 pushd ./laradock
