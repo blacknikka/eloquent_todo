@@ -90,4 +90,8 @@ jobs:
           command: dockerize -wait tcp://localhost:3306 -timeout 1m
 
       # run tests
-      - run: ./vendor/bin/phpunit
+      - run:
+          name: PHPUnit
+          command: |
+            docker-compose exec workspace phpunit
+          working_directory: ./laradock
