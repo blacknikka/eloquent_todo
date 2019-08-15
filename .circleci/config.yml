@@ -5,30 +5,16 @@
 version: 2
 jobs:
   build:
-    docker:
-      # Specify the version you desire here
-      - image: circleci/php:7.1-node-browsers
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # Using the RAM variation mitigates I/O contention
-      # for database intensive operations.
-      # - image: circleci/mysql:5.7-ram
-      #
-      # - image: redis:2.8.19
-
+    machine: true
     steps:
       - checkout
 
-      - run: sudo apt update # PHP CircleCI 2.0 Configuration File# PHP CircleCI 2.0 Configuration File sudo apt install zlib1g-dev libsqlite3-dev
-      - run: sudo docker-php-ext-install zip
       - run: printenv
       - run: git submodule init
       - run: git submodule update
       - run: git submodule foreach git pull origin master
       - run: cat ./laradock/env-example ./etc/env-example > ./laradock/.env
-      - run: cp etc/laravel.env.sample src/.env
+      - run: cp etc/.env.example src/.env
       - run: cp etc/grant-all-to-testing-database.sql laradock/mysql/docker-entrypoint-initdb.d
       - run: ls laradock
 
@@ -41,30 +27,31 @@ jobs:
             - v1-dependencies-
 
       - run:
-        name: Docker Image Rebuild
-        command: |
-          if [ ! -f ~/caches/images.tar ]; then
-              docker-compose up -d nginx mysql workspace 
-          fi
-        working_directory: ./laradock
+          name: Docker Image Rebuild
+          command: |
+            if [ ! -f ~/caches/images.tar ]; then
+                docker-compose up -d nginx mysql workspace 
+            fi
+          working_directory: ./laradock
+      - run: docker image ls --format="{{.Repository}}"
       - run:
-        name: Save Docker Images
-        command: |
-          if [ ! -f ~/caches/images.tar ]; then
-              mkdir ~/caches
-              docker image save \
-                  $(docker image ls --format="{{.Repository}}" | grep $(grep COMPOSE_PROJECT_NAME etc/env-example | sed s/.*=//g)_) \
-              -o ~/caches/images.tar
-          fi
+          name: Save Docker Images
+          command: |
+            if [ ! -f ~/caches/images.tar ]; then
+                mkdir ~/caches
+                docker image save \
+                    $(docker image ls --format="{{.Repository}}" | grep $(grep COMPOSE_PROJECT_NAME etc/env-example | sed s/.*=//g)_) \
+                -o ~/caches/images.tar
+            fi
       - save_cache:
-        key: laradock-v1-{{ checksum "./laradock.tar" }}
-        paths:
-          - ~/caches/images.tar
+          key: laradock-v1-{{ checksum "./laradock.tar" }}
+          paths:
+            - ~/caches/images.tar
       - run:
-        name: Install composer packages
-        command: |
-          docker-compose exec workspace composer install
-        working_directory: ./laradock
+          name: Install composer packages
+          command: |
+            docker-compose exec workspace composer install
+          working_directory: ./laradock
       - save_cache:
           key: v1-dependencies-{{ checksum "composer.json" }}
           paths:
@@ -74,10 +61,10 @@ jobs:
             - node-v1-{{ checksum "package.json" }}
             - node-v1-
       - run:
-        name: Install composer packages
-        command: |
-          docker-compose exec workspace npm install
-        working_directory: ./laradock
+          name: Install composer packages
+          command: |
+            docker-compose exec workspace npm install
+          working_directory: ./laradock
       - save_cache:
           key: node-v1-{{ checksum "package.json" }}
           paths:
@@ -91,12 +78,20 @@ jobs:
       # wait for Docker DB container.
       - run:
           name: install dockerize
-          command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+          command: |
+            wget \
+                https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+            sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+            rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
           environment:
-          DOCKERIZE_VERSION: v0.3.0
+            DOCKERIZE_VERSION: v0.6.1
       - run:
           name: Wait for db
           command: dockerize -wait tcp://localhost:3306 -timeout 1m
 
       # run tests
-      - run: ./vendor/bin/phpunit
+      - run:
+          name: PHPUnit
+          command: |
+            docker-compose exec workspace ./vendor/bin/phpunit
+          working_directory: ./laradock
