@@ -1,10 +1,11 @@
 <?php
 
-namespace App;
+namespace App\Models\User;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Models\User\Profile;
 
 class User extends Authenticatable
 {
@@ -36,4 +37,12 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * Get user pfofile.
+     */
+    public function profile()
+    {
+        return $this->hasOne(Profile::class);
+    }
 }
