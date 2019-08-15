@@ -58,6 +58,11 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
+        ],
+        "initialize": [
+            "@php artisan key:generate",
+            "@php artisan config:cache",
+            "@php artisan migrate:fresh --seed"
         ]
     }
 }
