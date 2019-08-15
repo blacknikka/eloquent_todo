@@ -5,9 +5,9 @@
 version: 2
 jobs:
   build:
+    machine: true
     docker:
       # Specify the version you desire here
-      machine: true
       - image: circleci/php:7.1-node-browsers
 
       # Specify service dependencies here if necessary
