@@ -1,9 +1,9 @@
 <?php
 
-namespace App\User;
+namespace App\Models\User;
 
 use Illuminate\Database\Eloquent\Model;
-use App\User;
+use App\Models\User\User;
 
 class Profile extends Model
 {
