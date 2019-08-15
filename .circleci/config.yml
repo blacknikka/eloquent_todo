@@ -33,6 +33,8 @@ jobs:
                 docker-compose up -d nginx mysql workspace 
             fi
           working_directory: ./laradock
+      - run: docker image ls --format="{{.Repository}}"
+      - run: grep $(grep COMPOSE_PROJECT_NAME etc/env-example | sed s/.*=//g)_
       - run:
           name: Save Docker Images
           command: |
