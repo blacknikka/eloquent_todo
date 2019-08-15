@@ -93,5 +93,5 @@ jobs:
       - run:
           name: PHPUnit
           command: |
-            docker-compose exec workspace phpunit
+            docker-compose exec workspace ./vendor/bin/phpunit
           working_directory: ./laradock
