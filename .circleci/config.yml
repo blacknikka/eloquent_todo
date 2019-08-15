@@ -41,30 +41,30 @@ jobs:
             - v1-dependencies-
 
       - run:
-        name: Docker Image Rebuild
-        command: |
-          if [ ! -f ~/caches/images.tar ]; then
-              docker-compose up -d nginx mysql workspace 
-          fi
-        working_directory: ./laradock
+          name: Docker Image Rebuild
+          command: |
+            if [ ! -f ~/caches/images.tar ]; then
+                docker-compose up -d nginx mysql workspace 
+            fi
+          working_directory: ./laradock
       - run:
-        name: Save Docker Images
-        command: |
-          if [ ! -f ~/caches/images.tar ]; then
-              mkdir ~/caches
-              docker image save \
-                  $(docker image ls --format="{{.Repository}}" | grep $(grep COMPOSE_PROJECT_NAME etc/env-example | sed s/.*=//g)_) \
-              -o ~/caches/images.tar
-          fi
+          name: Save Docker Images
+          command: |
+            if [ ! -f ~/caches/images.tar ]; then
+                mkdir ~/caches
+                docker image save \
+                    $(docker image ls --format="{{.Repository}}" | grep $(grep COMPOSE_PROJECT_NAME etc/env-example | sed s/.*=//g)_) \
+                -o ~/caches/images.tar
+            fi
       - save_cache:
-        key: laradock-v1-{{ checksum "./laradock.tar" }}
-        paths:
-          - ~/caches/images.tar
+          key: laradock-v1-{{ checksum "./laradock.tar" }}
+          paths:
+            - ~/caches/images.tar
       - run:
-        name: Install composer packages
-        command: |
-          docker-compose exec workspace composer install
-        working_directory: ./laradock
+          name: Install composer packages
+          command: |
+            docker-compose exec workspace composer install
+          working_directory: ./laradock
       - save_cache:
           key: v1-dependencies-{{ checksum "composer.json" }}
           paths:
@@ -74,10 +74,10 @@ jobs:
             - node-v1-{{ checksum "package.json" }}
             - node-v1-
       - run:
-        name: Install composer packages
-        command: |
-          docker-compose exec workspace npm install
-        working_directory: ./laradock
+          name: Install composer packages
+          command: |
+            docker-compose exec workspace npm install
+          working_directory: ./laradock
       - save_cache:
           key: node-v1-{{ checksum "package.json" }}
           paths:
