@@ -13,6 +13,7 @@ class Profile extends Model
      * @var array
      */
     protected $fillable = [
+        'user_id',
         'displayName',
         'comment',
     ];
