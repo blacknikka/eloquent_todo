@@ -1,12 +1,12 @@
 <?php
 
-namespace Tests\Unit\Models\User;
+namespace Tests\Unit\Infrastructure\Eloquent;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
-use App\Models\User\User;
+use App\Infrastructure\Eloquent\UserEloquent;
 use Faker\Generator as Faker;
 use Illuminate\Support\Str;
 
@@ -18,8 +18,8 @@ class UserTest extends TestCase
     public function UserCreate()
     {
         $faker = app()->make(Faker::class);
-        $prevCount = User::count();
-        $user = User::create(
+        $prevCount = UserEloquent::count();
+        $user = UserEloquent::create(
             [
                 'name' => $faker->name,
                 'email' => $faker->unique()->safeEmail,
@@ -29,7 +29,7 @@ class UserTest extends TestCase
             ]
         );
 
-        $afterCount = User::count();
+        $afterCount = UserEloquent::count();
         $this->assertTrue($user->id > 0);
         $this->assertSame($afterCount, $prevCount + 1);
     }

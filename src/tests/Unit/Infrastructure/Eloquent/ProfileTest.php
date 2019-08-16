@@ -1,16 +1,16 @@
 <?php
 
-namespace Tests\Unit\Models\User;
+namespace Tests\Unit\Infrastructure\Eloquent;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Models\User\User;
-use App\Models\User\Profile;
+use App\Infrastructure\Eloquent\UserEloquent;
+use App\Infrastructure\Eloquent\ProfileEloquent;
 use Faker\Generator as Faker;
 use Illuminate\Support\Str;
 
-class ProfileTest extends TestCase
+class ProfileEloquentTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -18,9 +18,9 @@ class ProfileTest extends TestCase
     public function ProfileCreate()
     {
         $faker = app()->make(Faker::class);
-        $prevCount = Profile::count();
-        $user = factory(User::class)->create();
-        $profile = Profile::create(
+        $prevCount = ProfileEloquent::count();
+        $user = factory(UserEloquent::class)->create();
+        $profile = ProfileEloquent::create(
             [
                 'user_id' => $user->id,
                 'displayName' => $faker->name,
@@ -28,7 +28,7 @@ class ProfileTest extends TestCase
             ]
         );
 
-        $afterCount = Profile::count();
+        $afterCount = ProfileEloquent::count();
         $this->assertTrue($profile->id > 0);
         $this->assertSame($afterCount, $prevCount + 1);
     }
