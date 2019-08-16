@@ -10,7 +10,7 @@ use App\Infrastructure\Eloquent\UserEloquent;
 use Faker\Generator as Faker;
 use Illuminate\Support\Str;
 
-class UserTest extends TestCase
+class UserEloquentTest extends TestCase
 {
     use RefreshDatabase;
 
