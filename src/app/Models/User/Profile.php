@@ -2,28 +2,76 @@
 
 namespace App\Models\User;
 
-use Illuminate\Database\Eloquent\Model;
-use App\Models\User\User;
+use App\Models\User\UserId;
 
-class Profile extends Model
+class Profile
 {
     /**
-     * The attributes that are mass assignable.
+     * UserId
      *
-     * @var array
+     * @var UserId $userId
      */
-    protected $fillable = [
-        'user_id',
-        'displayName',
-        'comment',
-    ];
+    private $userId;
 
     /**
-     * Get user by Profile.
+     * 表示名
+     *
+     * @var string
      */
-    public function user()
+    private $displayName;
+
+    /**
+     * コメント
+     *
+     * @var stirng
+     */
+    private $comment;
+
+    /**
+     * コンストラクタ
+     *
+     * @param UserId $userId
+     * @param string $displayName
+     * @param string $comment
+     */
+    public function __construct(
+        UserId $userId,
+        string $displayName,
+        string $comment
+    )
     {
-        return $this->belongsTo(User::class);
+        $this->userId = $userId;
+        $this->displayName = $displayName;
+        $this->comment = $comment;
     }
 
+    /**
+     * UserId
+     *
+     * @return UserId
+     */
+    public function getUserId() : UserId
+    {
+        return $this->userId;
+    }
+
+    /**
+     * 表示名
+     *
+     * @return string
+     */
+    public function getDisplayName() : string
+    {
+        return $this->displayName;
+    }
+
+    /**
+     * コメント
+     *
+     * @return string
+     */
+    public function  getComment() : string
+    {
+        return $this->comment;
+    }
 }

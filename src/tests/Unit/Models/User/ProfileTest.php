@@ -5,31 +5,22 @@ namespace Tests\Unit\Models\User;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Models\User\User;
 use App\Models\User\Profile;
-use Faker\Generator as Faker;
-use Illuminate\Support\Str;
+use App\Models\User\UserId;
 
 class ProfileTest extends TestCase
 {
-    use RefreshDatabase;
-
     /** @test */
-    public function ProfileCreate()
+    public function コンストラクタ()
     {
-        $faker = app()->make(Faker::class);
-        $prevCount = Profile::count();
-        $user = factory(User::class)->create();
-        $profile = Profile::create(
-            [
-                'user_id' => $user->id,
-                'displayName' => $faker->name,
-                'comment' => $faker->sentence,
-            ]
+        $profile = new Profile(
+            new UserId(1),
+            'displayName',
+            'comment'
         );
 
-        $afterCount = Profile::count();
-        $this->assertTrue($profile->id > 0);
-        $this->assertSame($afterCount, $prevCount + 1);
+        $this->assertSame($profile->getUserId()->getId(), 1);
+        $this->assertSame($profile->getDisplayName(), 'displayName');
+        $this->assertSame($profile->getComment(), 'comment');
     }
 }

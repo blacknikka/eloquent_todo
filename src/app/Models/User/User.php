@@ -3,46 +3,69 @@
 namespace App\Models\User;
 
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use App\Models\User\Profile;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 
-class User extends Authenticatable
+class User extends  Authenticatable
 {
     use Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-        'name', 'email', 'password',
-    ];
+    private $name;
+
+    private $email;
 
     /**
-     * The attributes that should be hidden for arrays.
+     * ハッシュされたパスワード文字列
      *
-     * @var array
+     * @var [type]
      */
-    protected $hidden = [
-        'password', 'remember_token',
-    ];
+    private $password;
 
     /**
-     * The attributes that should be cast to native types.
+     * コンストラクタ
      *
-     * @var array
+     * @param string $name
+     * @param string $email
+     * @param string $password
      */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
-
-    /**
-     * Get user pfofile.
-     */
-    public function profile()
+    public function __construct(
+        string $name,
+        string $email,
+        string $password
+    )
     {
-        return $this->hasOne(Profile::class);
+        $this->name = $name;
+        $this->email = $email;
+        $this->password = $password;
+    }
+
+    /**
+     * 名前の取得
+     *
+     * @return string
+     */
+    public function getName() : string
+    {
+        return $this->name;
+    }
+
+    /**
+     * Email
+     *
+     * @return string
+     */
+    public function getEmail() : string
+    {
+        return $this->email;
+    }
+
+    /**
+     * パスワード取得
+     *
+     * @return string
+     */
+    public function  getPassword() : string
+    {
+        return $this->password;
     }
 }
