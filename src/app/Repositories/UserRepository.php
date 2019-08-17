@@ -5,8 +5,10 @@ namespace App\Repositories;
 use App\Repositories\UserRepositoryInterface;
 use App\Models\User\User;
 use App\Models\User\UserId;
-use Illuminate\Support\Facades\Hash;
+use App\Models\User\Profile;
+use App\Models\User\ProfileId;
 use App\Infrastructure\Eloquent\UserEloquent;
+use App\Infrastructure\Eloquent\ProfileEloquent;
 
 class UserRepository implements UserRepositoryInterface
 {
@@ -17,9 +19,20 @@ class UserRepository implements UserRepositoryInterface
      */
     private $userEloquent;
 
-    public function __construct(UserEloquent $userEloquent)
+    /**
+     * ProfileEloquent
+     *
+     * @var ProfileEloquent
+     */
+    private $profileEloquent;
+
+    public function __construct(
+        UserEloquent $userEloquent,
+        ProfileEloquent $profileEloquent
+    )
     {
         $this->userEloquent = $userEloquent;
+        $this->profileEloquent = $profileEloquent;
     }
 
     /**
@@ -60,5 +73,27 @@ class UserRepository implements UserRepositoryInterface
             $user->email,
             $user->password
         );
+    }
+
+    /**
+     * Profileを登録する
+     *
+     * @param Profile $profile
+     * @return ProfileId|null
+     */
+    public function createUserProfile(UserId $uid, Profile $profile) : ?ProfileId
+    {
+        if ($this->userEloquent::where('id', $uid->getId())->exists() === true) {
+            $profileEloquent = $this->profileEloquent::create(
+                [
+                    'user_id' => $uid,
+                    'displayName' => $profile->getDisplayName(),
+                    'comment' => $profile->getComment(),
+                ]
+            );
+        }
+
+        // 存在しない場合にはnullを返す
+        return null;
     }
 }
