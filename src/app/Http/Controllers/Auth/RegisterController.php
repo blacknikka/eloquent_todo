@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Infrastructure\Eloquent\UserEloquent;
+use App\Repositories\UserRepository;
+use App\Models\User\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -31,13 +32,22 @@ class RegisterController extends Controller
     protected $redirectTo = '/home';
 
     /**
+     * Userリポジトリ
+     *
+     * @var UserRepository
+     */
+    private $userRepository;
+
+    /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(UserRepository $userRepository)
     {
         $this->middleware('guest');
+
+        $this->userRepository = $userRepository;
     }
 
     /**
@@ -63,10 +73,16 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return UserEloquent::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-        ]);
+        $user = new User(
+            $data['name'],
+            $data['email'],
+            Hash::make($data['password'])
+        );
+
+        $id = $this->userRepository->createUser(
+            $user
+        );
+
+        return $user;
     }
 }

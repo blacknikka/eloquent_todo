@@ -30,7 +30,7 @@ class UserRepository implements UserRepositoryInterface
      */
     public function createUser(User $user) : UserId
     {
-        $userEloquent = $this->userEloquent->create(
+        $userEloquent = $this->userEloquent::create(
             [
                 'name' => $user->getName(),
                 'email' => $user->getEmail(),
@@ -49,7 +49,7 @@ class UserRepository implements UserRepositoryInterface
      */
     public function findByUserId(UserId $id) : ?User
     {
-        $user = $this->userEloquent->find($id->getId());
+        $user = $this->userEloquent::find($id->getId());
 
         if (is_null($user)) {
             return null;
