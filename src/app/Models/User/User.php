@@ -2,12 +2,23 @@
 
 namespace App\Models\User;
 
-class User
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+
+class User extends  Authenticatable
 {
+    use Notifiable;
+
     private $name;
 
     private $email;
 
+    /**
+     * ハッシュされたパスワード文字列
+     *
+     * @var [type]
+     */
     private $password;
 
     /**
