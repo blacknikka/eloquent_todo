@@ -13,8 +13,7 @@ jobs:
       - run: git submodule init
       - run: git submodule update
       - run: git submodule foreach git pull origin master
-      - run: cd laradock
-      - run: git checkout 8254c3464743d86f42e9d7c83764bf3c385b6ad8
+      - run: cd laradock && git checkout 8254c3464743d86f42e9d7c83764bf3c385b6ad8
       - run: cat ./laradock/env-example ./etc/env-example > ./laradock/.env
       - run: cp etc/.env.example src/.env
       - run: cp etc/grant-all-to-testing-database.sql laradock/mysql/docker-entrypoint-initdb.d
