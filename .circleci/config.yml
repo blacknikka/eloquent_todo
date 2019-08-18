@@ -13,19 +13,22 @@ jobs:
       - run: git submodule init
       - run: git submodule update
       - run: git submodule foreach git pull origin master
+      - run: cd laradock
+      - run: git checkout 8254c3464743d86f42e9d7c83764bf3c385b6ad8
       - run: cat ./laradock/env-example ./etc/env-example > ./laradock/.env
       - run: cp etc/.env.example src/.env
       - run: cp etc/grant-all-to-testing-database.sql laradock/mysql/docker-entrypoint-initdb.d
       - run: ls laradock
 
-      # Download and cache dependencies
+      # Docker
+      - run:
+          name: Archive Build Context (for checksum)
+          command: tar --mtime="2000-01-01 00:00Z" -cvf laradock.tar laradock
       - restore_cache:
           keys:
-            # "composer.lock" can be used if it is committed to the repo
-            - v1-dependencies-{{ checksum "composer.json" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
-
+            - laradock-v1-{{ checksum "./laradock.tar" }}
+          paths:
+            - ~/caches/images.tar
       - run:
           name: Docker Image Rebuild
           command: |
@@ -33,7 +36,6 @@ jobs:
                 docker-compose up -d nginx mysql workspace 
             fi
           working_directory: ./laradock
-      - run: docker image ls --format="{{.Repository}}"
       - run:
           name: Save Docker Images
           command: |
@@ -44,31 +46,37 @@ jobs:
                 -o ~/caches/images.tar
             fi
       - save_cache:
-          key: laradock-v1-{{ checksum "./laradock.tar" }}
+          key: laradock-v1-{{ checksum "./laradock" }}
           paths:
             - ~/caches/images.tar
+
+      # Composer
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "./src/composer.lock" }}
       - run:
           name: Install composer packages
           command: |
             docker-compose exec workspace composer install
           working_directory: ./laradock
       - save_cache:
-          key: v1-dependencies-{{ checksum "composer.json" }}
+          key: v1-dependencies-{{ checksum "./src/composer.json" }}
           paths:
-            - ./vendor
+            - ./src/vendor
+
+      # Composer
       - restore_cache:
           keys:
-            - node-v1-{{ checksum "package.json" }}
-            - node-v1-
+            - node-v1-{{ checksum "./src/package.json" }}
       - run:
           name: Install composer packages
           command: |
             docker-compose exec workspace npm install
           working_directory: ./laradock
       - save_cache:
-          key: node-v1-{{ checksum "package.json" }}
+          key: node-v1-{{ checksum "./src/package.json" }}
           paths:
-            - node_modules
+            - ./src/node_modules
 
       - run:
           name: Initialize Laravel Project
