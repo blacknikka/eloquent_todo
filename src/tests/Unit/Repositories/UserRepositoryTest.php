@@ -9,7 +9,10 @@ use App\Repositories\UserRepository;
 use Mockery;
 use App\Models\User\User;
 use App\Models\User\UserId;
+use App\Models\User\Profile;
+use App\Models\User\ProfileId;
 use App\Infrastructure\Eloquent\UserEloquent;
+use App\Infrastructure\Eloquent\ProfileEloquent;
 
 class UserRepositoryTest extends TestCase
 {
@@ -21,15 +24,20 @@ class UserRepositoryTest extends TestCase
     /** @var Mockery\MockInterface */
     private $userEloquentMock;
 
+    /** @var Mockery\MockInterface */
+    private $profileEloquentMock;
+
     public function setUp()
     {
         parent::setUp();
 
         // 依存をモックする
         $this->userEloquentMock = Mockery::mock(UserEloquent::class);
+        $this->profileEloquentMock = Mockery::mock(ProfileEloquent::class);
 
         // 注入
         app()->instance(UserEloquent::class, $this->userEloquentMock);
+        app()->instance(ProfileEloquent::class, $this->profileEloquentMock);
 
         // テスト対象のインスタンスを取得
         $this->sut = app()->make(UserRepository::class);
@@ -92,6 +100,26 @@ class UserRepositoryTest extends TestCase
 
         $this->userEloquentMock
             ->shouldHaveReceived('create');
+    }
 
+    /** @test */
+    public function createUserProfile_existsが呼ばれていることの確認()
+    {
+        $this->userEloquentMock
+            ->shouldReceive('where->exists')
+            ->andReturn(false);
+
+        $createResult = $this->sut->createUserProfile(
+            new UserId(1),
+            new Profile(
+                new UserId(1),
+                'displayName',
+                'comment'
+            )
+        );
+
+        $this->assertNull($createResult);
+        $this->userEloquentMock
+            ->shouldHaveReceived('where');
     }
 }
