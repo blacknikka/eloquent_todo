@@ -11,6 +11,9 @@ cp ./etc/.env.example ./src/.env
 # create database.
 cp ./etc/grant-all-to-testing-database.sql ./laradock/mysql/docker-entrypoint-initdb.d
 
+# php pfm
+cp ./etc/php-fpm/* ./laradock/php-fpm/
+
 # docker up
 pushd ./laradock
 docker-compose build --no-cache nginx mysql workspace
