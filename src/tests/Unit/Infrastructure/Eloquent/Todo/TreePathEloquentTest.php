@@ -60,6 +60,8 @@ class TreePathEloquentTest extends TestCase
         $ancestorEloquent = $created->ancestor;
         $this->assertNotNull($ancestorEloquent);
         $this->assertSame($ancestorEloquent->id, $ancestor->id);
+
+        $this->assertSame($ancestorEloquent->comment, $ancestor->comment);
     }
 
     /** @test */
@@ -78,5 +80,7 @@ class TreePathEloquentTest extends TestCase
         $descendantEloquent = $created->descendant;
         $this->assertNotNull($descendantEloquent);
         $this->assertSame($descendantEloquent->id, $descendant->id);
+
+        $this->assertSame($descendantEloquent->comment, $descendant->comment);
     }
 }
