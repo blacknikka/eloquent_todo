@@ -15,6 +15,14 @@ class ProfileEloquentTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
+    public function factoryテスト()
+    {
+        $count = ProfileEloquent::count();
+        $profile = factory(ProfileEloquent::class)->create();
+        $this->assertSame($count + 1, ProfileEloquent::count());
+    }
+
+    /** @test */
     public function ProfileCreate()
     {
         $faker = app()->make(Faker::class);
