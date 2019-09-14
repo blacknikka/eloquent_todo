@@ -27,5 +27,4 @@ class ProfileEloquent extends Model
     {
         return $this->belongsTo(UserEloquent::class);
     }
-
 }

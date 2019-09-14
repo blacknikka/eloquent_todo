@@ -15,6 +15,15 @@ class UserEloquentTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
+    public function factoryテスト()
+    {
+        $count = UserEloquent::count();
+        $user = factory(UserEloquent::class)->create();
+        $this->assertSame($count + 1, UserEloquent::count());
+        $this->assertTrue($user->id > 0);
+    }
+
+    /** @test */
     public function UserCreate()
     {
         $faker = app()->make(Faker::class);
