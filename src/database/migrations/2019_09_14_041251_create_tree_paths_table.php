@@ -14,15 +14,15 @@ class CreateTreePathsTable extends Migration
     public function up()
     {
         Schema::create('tree_paths', function (Blueprint $table) {
-            $table->unsignedInteger('ancestor')->comment('ancestor of this item');
-            $table->unsignedInteger('descendant')->comment('descendant of this item');
+            $table->unsignedInteger('ancestor_id')->comment('ancestor of this item');
+            $table->unsignedInteger('descendant_id')->comment('descendant of this item');
             $table->timestamps();
 
-            $table->unique(['ancestor', 'descendant']);
+            $table->unique(['ancestor_id', 'descendant_id']);
 
             // fkey
-            $table->foreign('ancestor')->references('id')->on('comments');
-            $table->foreign('descendant')->references('id')->on('comments');
+            $table->foreign('ancestor_id')->references('id')->on('comments');
+            $table->foreign('descendant_id')->references('id')->on('comments');
         });
     }
 

@@ -45,4 +45,46 @@ class CommentEloquentTest extends TestCase
         $this->assertTrue($comment->id > 0);
         $this->assertSame($afterCount, $prevCount + 1);
     }
+
+    /** @test */
+    public function user取得()
+    {
+        $faker = app()->make(Faker::class);
+        $user = factory(UserEloquent::class)->create();
+        $todo = factory(TodoEloquent::class)->create();
+
+        $created = CommentEloquent::create(
+            [
+                'user_id' => $user->id,
+                'todo_id' => $todo->id,
+                'comment' => $faker->sentence,
+            ]
+        );
+
+        // user取得
+        $belongedUser = $created->user;
+        $this->assertNotNull($belongedUser);
+        $this->assertSame($belongedUser->id, $user->id);
+    }
+
+    /** @test */
+    public function todo取得()
+    {
+        $faker = app()->make(Faker::class);
+        $user = factory(UserEloquent::class)->create();
+        $todo = factory(TodoEloquent::class)->create();
+
+        $created = CommentEloquent::create(
+            [
+                'user_id' => $user->id,
+                'todo_id' => $todo->id,
+                'comment' => $faker->sentence,
+            ]
+        );
+
+        $belongedTodo = $created->todo;
+        $this->assertNotNull($belongedTodo);
+        $this->assertTrue($belongedTodo->id > 0);
+        $this->assertSame($belongedTodo->id, $todo->id);
+    }
 }

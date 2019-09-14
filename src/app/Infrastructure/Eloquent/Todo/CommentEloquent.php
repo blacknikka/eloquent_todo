@@ -3,6 +3,9 @@
 namespace App\Infrastructure\Eloquent\Todo;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Infrastructure\Eloquent\UserEloquent;
+use App\Infrastructure\Eloquent\Todo\TodoEloquent;
+use \Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CommentEloquent extends Model
 {
@@ -19,4 +22,23 @@ class CommentEloquent extends Model
         'comment',
     ];
 
+    /**
+     * Get user by Comment.
+     *
+     * @return BelongsTo
+     */
+    public function user() : BelongsTo
+    {
+        return $this->belongsTo(UserEloquent::class);
+    }
+
+    /**
+     * Get todo by Comment.
+     *
+     * @return BelongsTo
+     */
+    public function todo() : BelongsTo
+    {
+        return $this->belongsTo(TodoEloquent::class);
+    }
 }

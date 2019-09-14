@@ -40,4 +40,23 @@ class ProfileEloquentTest extends TestCase
         $this->assertTrue($profile->id > 0);
         $this->assertSame($afterCount, $prevCount + 1);
     }
+
+    /** @test */
+    public function user取得()
+    {
+        $faker = app()->make(Faker::class);
+        $user = factory(UserEloquent::class)->create();
+        $created = ProfileEloquent::create(
+            [
+                'user_id' => $user->id,
+                'displayName' => $faker->name,
+                'comment' => $faker->sentence,
+            ]
+        );
+
+        $belonged = $created->user;
+        $this->assertNotNull($belonged);
+        $this->assertTrue($belonged->id > 0);
+        $this->assertSame($belonged->id, $user->id);
+    }
 }
