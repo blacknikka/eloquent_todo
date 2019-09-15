@@ -15,7 +15,7 @@ interface CommentRepositoryInterface
      *
      * @param Comment $comment
      * @param CommentId $parentCommentId
-     * @return CommentId
+     * @return CommentId|null
      */
-    public function createComment(Comment $comment, CommentId $parentCommentId) : CommentId;
+    public function createComment(Comment $comment, CommentId $parentCommentId) : ?CommentId;
 }

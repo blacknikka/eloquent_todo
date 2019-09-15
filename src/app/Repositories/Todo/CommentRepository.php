@@ -40,9 +40,9 @@ class CommentRepository implements CommentRepositoryInterface
      *
      * @param Comment $comment
      * @param CommentId $parentCommentId Its parent's comment ID
-     * @return CommentId
+     * @return CommentId|null
      */
-    public function createComment(Comment $comment, CommentId $parentCommentId) : CommentId
+    public function createComment(Comment $comment, CommentId $parentCommentId) : ?CommentId
     {
         $commentEloquent = DB::transaction(function () use ($comment, $parentCommentId) {
             $commentEloquent = $this->commentEloquent::create(
@@ -64,6 +64,8 @@ class CommentRepository implements CommentRepositoryInterface
             return $commentEloquent;
         });
 
-        return new CommentId($commentEloquent->id);
+        return is_null($commentEloquent->id) ?
+            null:
+            new CommentId($commentEloquent->id);
     }
 }
