@@ -3,8 +3,9 @@
 namespace App\Models\Todo;
 
 use App\Models\User\UserId;
+use App\Models\Todo\TodoId;
 
-class Todo
+class Comment
 {
     /**
      * User id
@@ -14,35 +15,35 @@ class Todo
     private $userId;
 
     /**
-     * Comment
+     * Todo Id
+     *
+     * @var TodoId
+     */
+    private $todoId;
+
+    /**
+     * comment
      *
      * @var string
      */
     private $comment;
 
     /**
-     * Title
-     *
-     * @var string
-     */
-    private $title;
-
-    /**
      * コンストラクタ
      *
      * @param UserId $userId
+     * @param TodoId $todoId
      * @param string $comment
-     * @param string $title
      */
     public function __construct(
         UserId $userId,
-        string $comment,
-        string $title
+        TodoId $todoId,
+        string $comment
     )
     {
         $this->userId = $userId;
+        $this->todoId = $todoId;
         $this->comment = $comment;
-        $this->title = $title;
     }
 
     /**
@@ -56,6 +57,16 @@ class Todo
     }
 
     /**
+     * todo id
+     *
+     * @return TodoId
+     */
+    public function  getTodoId() : TodoId
+    {
+        return $this->todoId;
+    }
+
+    /**
      * comment
      *
      * @return string
@@ -63,15 +74,5 @@ class Todo
     public function getComment() : string
     {
         return $this->comment;
-    }
-
-    /**
-     * title
-     *
-     * @return string
-     */
-    public function  getTitle() : string
-    {
-        return $this->title;
     }
 }
