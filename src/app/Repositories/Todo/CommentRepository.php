@@ -6,6 +6,8 @@ use App\Repositories\Todo\CommentRepositoryInterface;
 use App\Models\Todo\Comment;
 use App\Models\Todo\CommentId;
 use App\Infrastructure\Eloquent\Todo\CommentEloquent;
+use App\Infrastructure\Eloquent\Todo\TreePathEloquent;
+use DB;
 
 class CommentRepository implements CommentRepositoryInterface
 {
@@ -16,11 +18,20 @@ class CommentRepository implements CommentRepositoryInterface
      */
     private $commentEloquent;
 
+    /**
+     * treePathEloquent
+     *
+     * @var TreePathEloquent
+     */
+    private $treePathEloquent;
+
     public function __construct(
-        CommentEloquent $commentEloquent
+        CommentEloquent $commentEloquent,
+        TreePathEloquent $treePathEloquent
     )
     {
         $this->commentEloquent = $commentEloquent;
+        $this->treePathEloquent = $treePathEloquent;
     }
 
     /**
@@ -33,16 +44,26 @@ class CommentRepository implements CommentRepositoryInterface
      */
     public function createComment(Comment $comment, CommentId $parentCommentId) : CommentId
     {
-        $commentEloquent = $this->commentEloquent::create(
-            [
-                'user_id' => $comment->getUserId()->getId(),
-                'todo_id' => $comment->getTodoId()->getId(),
-                'comment' => $comment,
-            ]
-        );
+        $commentEloquent = DB::transaction(function () use ($comment, $parentCommentId) {
+            $commentEloquent = $this->commentEloquent::create(
+                [
+                    'user_id' => $comment->getUserId()->getId(),
+                    'todo_id' => $comment->getTodoId()->getId(),
+                    'comment' => $comment,
+                ]
+            );
 
+            // insert a tree path.
+            $this->treePathEloquent::create(
+                [
+                    'ancestor_id' => $parentCommentId->getId(),
+                    'descendant_id' => $commentEloquent->id,
+                ]
+            );
 
+            return $commentEloquent;
+        });
 
-        return new CommentId($commentEloquent->getId());
+        return new CommentId($commentEloquent->id);
     }
 }
