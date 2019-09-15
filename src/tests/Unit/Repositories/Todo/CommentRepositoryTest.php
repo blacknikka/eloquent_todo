@@ -170,9 +170,49 @@ class CommentRepositoryTest extends TestCase
 
             $this->fail();
         } catch (Exception $e) {
-            // $this->assertSame($prevCommentCount, CommentEloquent::count());
-            // $this->assertSame($prevTreePathCount, TreePathEloquent::count());
-            // $this->assertNull($createdCommentId);
         }
+    }
+
+    /** @test */
+    public function getCommentsFromCommentId正常系()
+    {
+        // ここは本物のDBでテストしたい
+        app()->instance(CommentEloquent::class, new CommentEloquent);
+        app()->instance(TreePathEloquent::class, new TreePathEloquent);
+        $this->sut = app()->make(CommentRepository::class);
+
+        $commentEloquent1 = factory(CommentEloquent::class)->create();
+        $treePathCollections = factory(TreePathEloquent::class, 5)->create(
+            [
+                'ancestor_id' => $commentEloquent1->id,
+            ]
+        );
+
+        $commentEloquent2 = factory(CommentEloquent::class)->create();
+        factory(TreePathEloquent::class, 5)->create(
+            [
+                'ancestor_id' => $commentEloquent2->id,
+            ]
+        );
+
+        // ancestor_id => 10のものだけ取得する
+        $comments = $this->sut->getCommentsFromCommentId(
+            new CommentId($commentEloquent1->id)
+        );
+
+        // 個数が同じか
+        $this->assertSame($comments->count(), 5);
+
+        // 取得したコレクションが想定のものか確認
+        $treePathCollections->each(
+            function (TreePathEloquent $treePath) use ($comments) {
+                $isContain = $comments->contains(
+                    function (Comment $comment) use ($treePath) {
+                        return $treePath->descendant->comment === $comment->getComment();
+                    }
+                );
+                $this->assertTrue($isContain);
+            }
+        );
     }
 }
