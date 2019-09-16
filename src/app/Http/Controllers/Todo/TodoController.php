@@ -29,7 +29,7 @@ class TodoController extends Controller
      * @param GetTodoRequest $request
      * @return JsonResponse
      */
-    public function getTodoByUserId(GetTodoRequest $request, $id) : JsonResponse
+    public function getTodosByUserId(GetTodoRequest $request, $id) : JsonResponse
     {
         $todos = $this->todoRepositoryInterface->getTodosByUserId(
             new UserId((int)$id)
