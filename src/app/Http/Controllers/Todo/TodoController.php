@@ -29,16 +29,10 @@ class TodoController extends Controller
      * @param GetTodoRequest $request
      * @return JsonResponse
      */
-    public function getTodoByUserId(GetTodoRequest $request) : JsonResponse
+    public function getTodoByUserId(GetTodoRequest $request, $id) : JsonResponse
     {
-        $todos = collect(
-            [
-                new Todo(
-                    new UserId(1),
-                    'comment',
-                    'title'
-                )
-            ]
+        $todos = $this->todoRepositoryInterface->getTodosByUserId(
+            new UserId((int)$id)
         );
 
         return response()->json(
