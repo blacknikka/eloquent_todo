@@ -6,7 +6,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class TodoController extends TestCase
+class TodoControllerTest extends TestCase
 {
     /** @test */
     public function get正常系()
