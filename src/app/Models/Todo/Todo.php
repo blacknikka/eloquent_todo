@@ -74,4 +74,18 @@ class Todo
     {
         return $this->title;
     }
+
+    /**
+     * to array
+     *
+     * @return array
+     */
+    public function toArray() : array
+    {
+        return [
+            'user_id' => $this->userId->toArray(),
+            'comment' => $this->comment,
+            'title' => $this->title,
+        ];
+    }
 }

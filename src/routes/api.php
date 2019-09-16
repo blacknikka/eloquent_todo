@@ -16,3 +16,14 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// todo
+Route::group(
+    [
+        'prefix' => 'todo',
+    ],
+    function () {
+        Route::get('/get/{id}', 'Todo\TodoController@getTodoByUserId')
+        ->name('getTodo');
+    }
+);
