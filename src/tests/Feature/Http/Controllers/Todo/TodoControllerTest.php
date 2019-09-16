@@ -37,19 +37,17 @@ class TodoControllerTest extends TestCase
     /** @test */
     public function get正常系()
     {
+        $todo = new Todo(
+            new UserId(1),
+            'comment',
+            'title'
+        );
+
         $this->todoRepositoryMock
             ->shouldReceive('getTodosByUserId')
             ->once()
             ->andReturn(
-                collect(
-                    [
-                        new Todo(
-                            new UserId(1),
-                            'comment',
-                            'title'
-                        )
-                    ]
-                )
+                collect([$todo])
             );
 
         $response = $this->getJson(
@@ -62,6 +60,11 @@ class TodoControllerTest extends TestCase
         );
 
         $response->assertStatus(200);
+        $response->assertExactJson(
+            [
+                $todo->toArray()
+            ]
+        );
 
         $this->todoRepositoryMock
             ->shouldHaveReceived('getTodosByUserId')
