@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  workspace:
+    # open port 8080 for HMR    
+    ports:
+      - "8080:8080"
+    volumes:        
+      - ../etc:/root/etc
+    networks:
+      - backend
