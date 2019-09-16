@@ -195,7 +195,7 @@ class CommentRepositoryTest extends TestCase
             ]
         );
 
-        // ancestor_id => 10のものだけ取得する
+        // ancestor_id => $commentEloquent1->idのものだけ取得する
         $comments = $this->sut->getCommentsFromCommentId(
             new CommentId($commentEloquent1->id)
         );

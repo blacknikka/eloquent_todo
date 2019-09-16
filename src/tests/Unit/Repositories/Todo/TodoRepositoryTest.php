@@ -11,6 +11,7 @@ use App\Models\Todo\Todo;
 use App\Models\Todo\TodoId;
 use App\Models\User\UserId;
 use App\Infrastructure\Eloquent\Todo\TodoEloquent;
+use App\Infrastructure\Eloquent\UserEloquent;
 
 class TodoRepositoryTest extends TestCase
 {
@@ -94,5 +95,44 @@ class TodoRepositoryTest extends TestCase
 
         $this->todoEloquentMock
             ->shouldHaveReceived('create');
+    }
+
+    /** @test */
+    public function getTodosByUserId_正常系()
+    {
+        // ここは本物のDBでテストしたい
+        app()->instance(TodoEloquent::class, new TodoEloquent);
+        $this->sut = app()->make(TodoRepository::class);
+
+        $userEloquent1 = factory(UserEloquent::class)->create();
+        // 検索対象
+        $todoCollections1 = factory(TodoEloquent::class, 5)->create(
+            [
+                'user_id' => $userEloquent1->id,
+            ]
+        );
+
+        // 非検索対象
+        $userEloquent2 = factory(UserEloquent::class)->create();
+        $todoCollections2 = factory(TodoEloquent::class, 5)->create(
+            [
+                'user_id' => $userEloquent2->id,
+            ]
+        );
+
+        // iser_id => $userEloquent1->idのものだけ取得する
+        $todoModels = $this->sut->getTodosByUserId(
+            new UserId($userEloquent1->id)
+        );
+
+        // 個数が同じか
+        $this->assertSame($todoModels->count(), 5);
+
+        // 取得したコレクションが想定のものか確認
+        $todoCollections1->every(
+            function ($value) use ($userEloquent1) {
+                return $value->user_id === $userEloquent1->id;
+            }
+        );
     }
 }

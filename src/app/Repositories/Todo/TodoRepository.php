@@ -7,6 +7,7 @@ use App\Models\Todo\Todo;
 use App\Models\Todo\TodoId;
 use App\Models\User\UserId;
 use App\Infrastructure\Eloquent\Todo\TodoEloquent;
+use Illuminate\Support\Collection;
 
 class TodoRepository implements TodoRepositoryInterface
 {
@@ -61,6 +62,29 @@ class TodoRepository implements TodoRepositoryInterface
             new UserId($todo->user->id),
             $todo->comment,
             $todo->title
+        );
+    }
+
+    /**
+     * UserIdからTodoのリストを取得する
+     *
+     * @param UserId $id
+     * @return Todo[]|null
+     */
+    public function getTodosByUserId(UserId $id) : ?Collection
+    {
+        $todos = $this->todoEloquent::with('user')
+            ->where('user_id', $id->getId())
+            ->get();
+
+        return $todos->map(
+            function ($todo) {
+                return new Todo(
+                    new UserId($todo->user->id),
+                    $todo->comment,
+                    $todo->title
+                );
+            }
         );
     }
 }

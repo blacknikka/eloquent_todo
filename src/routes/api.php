@@ -23,7 +23,7 @@ Route::group(
         'prefix' => 'todo',
     ],
     function () {
-        Route::get('/get/{id}', 'Todo\TodoController@getTodoByUserId')
+        Route::get('/get/{id}', 'Todo\TodoController@getTodosByUserId')
         ->name('getTodo');
     }
 );
