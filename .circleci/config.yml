@@ -71,7 +71,7 @@ jobs:
             - node-v1-{{ .Branch }}-
             - node-v1-
       - run:
-          name: Install composer packages
+          name: Install npm packages
           command: |
             docker-compose exec workspace npm install
           working_directory: ./laradock
@@ -83,6 +83,13 @@ jobs:
       - run:
           name: Initialize Laravel Project
           command: docker-compose exec workspace composer run initialize
+          working_directory: ./laradock
+
+      # build front.
+      - run:
+          name: build front pages
+          command: |
+            docker-compose exec workspace npm run dev
           working_directory: ./laradock
 
       # wait for Docker DB container.
