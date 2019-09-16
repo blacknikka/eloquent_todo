@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Repositories\Todo\TodoRepository;
 use App\Models\Todo\Todo;
+use App\Models\Todo\TodoId;
 use App\Models\User\UserId;
 use Mockery;
 
@@ -71,6 +72,55 @@ class TodoControllerTest extends TestCase
             ->with(
                 \Hamcrest\Matchers::equalTo(
                     new UserId(1)
+                )
+            );
+    }
+
+    /** @test */
+    public function create_正常系()
+    {
+        $todoId = new TodoId(1);
+
+        $this->todoRepositoryMock
+            ->shouldReceive('createTodo')
+            ->once()
+            ->andReturn(
+                $todoId
+            );
+
+        $response = $this->postJson(
+            route(
+                'createTodo',
+                [
+                    'id' => 1,
+                ]
+            ),
+            [
+                'comment' => 'comment',
+                'title' => 'title',
+            ]
+        );
+
+        $response->assertStatus(200);
+        $response->assertExactJson(
+            [
+                'result' => true,
+                'response' => [
+                    'todo_id' => $todoId->toArray(),
+                ],
+                'message' => 'Todo is made correctly',
+            ]
+        );
+
+        $this->todoRepositoryMock
+            ->shouldHaveReceived('createTodo')
+            ->with(
+                \Hamcrest\Matchers::equalTo(
+                    new Todo(
+                        new UserId(1),
+                        'comment',
+                        'title'
+                    )
                 )
             );
     }

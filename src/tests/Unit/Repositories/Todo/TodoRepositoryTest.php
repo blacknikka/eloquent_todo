@@ -23,15 +23,20 @@ class TodoRepositoryTest extends TestCase
     /** @var Mockery\MockInterface */
     private $todoEloquentMock;
 
+    /** @var Mockery\MockInterface */
+    private $userEloquentMock;
+
     public function setUp()
     {
         parent::setUp();
 
         // 依存をモックする
         $this->todoEloquentMock = Mockery::mock(TodoEloquent::class);
+        $this->userEloquentMock = Mockery::mock(UserEloquent::class);
 
         // 注入
         app()->instance(TodoEloquent::class, $this->todoEloquentMock);
+        app()->instance(UserEloquent::class, $this->userEloquentMock);
 
         // テスト対象のインスタンスを取得
         $this->sut = app()->make(TodoRepository::class);
@@ -85,6 +90,10 @@ class TodoRepositoryTest extends TestCase
             ->shouldReceive('create')
             ->andReturn($todo);
 
+        $this->userEloquentMock
+            ->shouldReceive('find')
+            ->andReturn(UserEloquent::find($todo->user->id));
+
         $this->sut->createTodo(
             new Todo(
                 new UserId($todo->user->id),
@@ -95,6 +104,25 @@ class TodoRepositoryTest extends TestCase
 
         $this->todoEloquentMock
             ->shouldHaveReceived('create');
+    }
+
+    /** @test */
+    public function createTodo_userが存在しない()
+    {
+        // nullを返すようにする
+        $this->userEloquentMock
+            ->shouldReceive('find')
+            ->andReturn(null);
+
+        $createdId = $this->sut->createTodo(
+            new Todo(
+                new UserId(1),
+                'comment',
+                'title'
+            )
+        );
+
+        $this->assertNull($createdId);
     }
 
     /** @test */

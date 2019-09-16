@@ -7,6 +7,7 @@ use App\Models\Todo\Todo;
 use App\Models\Todo\TodoId;
 use App\Models\User\UserId;
 use App\Infrastructure\Eloquent\Todo\TodoEloquent;
+use App\Infrastructure\Eloquent\UserEloquent;
 use Illuminate\Support\Collection;
 
 class TodoRepository implements TodoRepositoryInterface
@@ -18,24 +19,36 @@ class TodoRepository implements TodoRepositoryInterface
      */
     private $todoEloquent;
 
+    /** @var UserEloquent */
+    private $userEloquent;
+
     public function __construct(
-        TodoEloquent $todoEloquent
+        TodoEloquent $todoEloquent,
+        UserEloquent $userEloquent
     )
     {
         $this->todoEloquent = $todoEloquent;
+        $this->userEloquent = $userEloquent;
     }
 
     /**
      * Todoの作成
      *
      * @param Todo $todo
-     * @return TodoId
+     * @return TodoId|null
      */
-    public function createTodo(Todo $todo) : TodoId
+    public function createTodo(Todo $todo) : ?TodoId
     {
+        $user = $this->userEloquent::find($todo->getUserId()->getId());
+
+        if (is_null($user)) {
+            // userが見つからなかったらnull
+            return null;
+        }
+
         $todoEloquent = $this->todoEloquent::create(
             [
-                'user_id' => $todo->getUserId(),
+                'user_id' => $todo->getUserId()->getId(),
                 'comment' => $todo->getComment(),
                 'title' => $todo->getTitle(),
             ]
