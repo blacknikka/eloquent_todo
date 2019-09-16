@@ -35,7 +35,7 @@ class TodoRepository implements TodoRepositoryInterface
     {
         $todoEloquent = $this->todoEloquent::create(
             [
-                'user_id' => $todo->getUserId(),
+                'user_id' => $todo->getUserId()->getId(),
                 'comment' => $todo->getComment(),
                 'title' => $todo->getTitle(),
             ]

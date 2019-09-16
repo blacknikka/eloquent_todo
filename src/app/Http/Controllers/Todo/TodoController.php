@@ -51,13 +51,27 @@ class TodoController extends Controller
      * @param [type] $comment
      * @return JsonResponse
      */
-    public function insertTodoByUserId(SetTodoRequest $request, $id) : JsonResponse
+    public function createTodoByUserId(SetTodoRequest $request, $id) : JsonResponse
     {
         $title = $request->input('title');
         $comment = $request->input('comment');
 
+        $createdTodoId = $this->todoRepositoryInterface->createTodo(
+            new Todo(
+                new UserId((int)$id),
+                $comment,
+                $title
+            )
+        );
+
         return response()->json(
-            []
+            [
+                'result' => true,
+                'response' => [
+                    'todo_id' => $createdTodoId->toArray(),
+                ],
+                'message' => 'Todo is made correctly',
+            ]
         );
     }
 }

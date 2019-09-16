@@ -20,10 +20,13 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 // todo
 Route::group(
     [
-        'prefix' => 'todo',
+        'prefix' => 'v1/todo',
     ],
     function () {
-        Route::get('/get/{id}', 'Todo\TodoController@getTodosByUserId')
+        Route::get('/{id}', 'Todo\TodoController@getTodosByUserId')
         ->name('getTodo');
+
+        Route::post('/{id}', 'Todo\TodoController@createTodoByUserId')
+        ->name('createTodo');
     }
 );
