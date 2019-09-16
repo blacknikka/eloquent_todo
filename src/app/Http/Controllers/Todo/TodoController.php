@@ -64,14 +64,25 @@ class TodoController extends Controller
             )
         );
 
-        return response()->json(
-            [
-                'result' => true,
-                'response' => [
-                    'todo_id' => $createdTodoId->toArray(),
-                ],
-                'message' => 'Todo is made correctly',
-            ]
-        );
+        if (is_null($createdTodoId)) {
+            // nullならUserおかしい
+            return response()->json(
+                [
+                    'result' => false,
+                    'response' => [],
+                    'message' => "This user doesn't exist",
+                ]
+            );
+        } else {
+            return response()->json(
+                [
+                    'result' => true,
+                    'response' => [
+                        'todo_id' => $createdTodoId->toArray(),
+                    ],
+                    'message' => 'Todo is made correctly',
+                ]
+            );
+        }
     }
 }

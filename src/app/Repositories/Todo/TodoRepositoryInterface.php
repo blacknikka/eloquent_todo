@@ -16,9 +16,9 @@ interface TodoRepositoryInterface
      * Todo作成
      *
      * @param Todo $todo
-     * @return TodoId
+     * @return TodoId|null
      */
-    public function createTodo(Todo $todo) : TodoId;
+    public function createTodo(Todo $todo) : ?TodoId;
 
     /**
      * Todo取得
