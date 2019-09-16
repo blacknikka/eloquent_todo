@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Repositories\Todo\TodoRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Http\Requests\Todo\GetTodoRequest;
+use App\Http\Requests\Todo\SetTodoRequest;
 use App\Models\Todo\Todo;
 use App\Models\Todo\TodoId;
 use App\Models\User\UserId;
@@ -39,6 +40,24 @@ class TodoController extends Controller
             $todos->map(function (Todo $todo) {
                 return $todo->toArray();
             })
+        );
+    }
+
+    /**
+     * IdからTodoを追加する
+     *
+     * @param SetTodoRequest $request
+     * @param [type] $id
+     * @param [type] $comment
+     * @return JsonResponse
+     */
+    public function insertTodoByUserId(SetTodoRequest $request, $id) : JsonResponse
+    {
+        $title = $request->input('title');
+        $comment = $request->input('comment');
+
+        return response()->json(
+            []
         );
     }
 }
