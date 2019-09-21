@@ -16,4 +16,12 @@ class CommentIdTest extends TestCase
 
         $this->assertSame($id->getId(), 1);
     }
+
+    /** @test */
+    public function toArray()
+    {
+        $commentId = new CommentId(1);
+
+        $this->assertSame($commentId->toArray(), ['id' => 1]);
+    }
 }

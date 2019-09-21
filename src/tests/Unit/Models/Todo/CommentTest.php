@@ -24,4 +24,27 @@ class CommentTest extends TestCase
         $this->assertSame($comment->getTodoId()->getId(), 2);
         $this->assertSame($comment->getComment(), 'comment');
     }
+
+    /** @test */
+    public function toArray()
+    {
+        $comment = new Comment(
+            new UserId(1),
+            new TodoId(2),
+            'comment'
+        );
+
+        $this->assertSame(
+            $comment->toArray(),
+            [
+                'user_id' => [
+                    'id' => 1,
+                ],
+                'todo_id' => [
+                    'id' => 2,
+                ],
+                'comment' => 'comment',
+            ]
+        );
+    }
 }
