@@ -12,9 +12,12 @@ use App\Models\Todo\Todo;
 use App\Models\Todo\TodoId;
 use App\Models\User\UserId;
 use Mockery;
+use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class CommentControllerTest extends TestCase
 {
+    use WithoutMiddleware;
+
     /** @var Mockery\MockInterface */
     private $commentRepositoryMock;
 

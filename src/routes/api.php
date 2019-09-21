@@ -35,6 +35,7 @@ Route::group(
 Route::group(
     [
         'prefix' => 'v1/comment',
+        'middleware' => 'auth:api',
     ],
     function () {
         Route::get(

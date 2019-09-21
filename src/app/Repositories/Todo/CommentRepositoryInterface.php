@@ -16,10 +16,10 @@ interface CommentRepositoryInterface
      * create comment
      *
      * @param Comment $comment
-     * @param CommentId $parentCommentId
+     * @param CommentId|null $parentCommentId
      * @return CommentId|null
      */
-    public function createComment(Comment $comment, CommentId $parentCommentId) : ?CommentId;
+    public function createComment(Comment $comment, ?CommentId $parentCommentId) : ?CommentId;
 
     /**
      * get comments from Todo id.

@@ -42,10 +42,10 @@ class CommentRepository implements CommentRepositoryInterface
      * Tree path is also added.
      *
      * @param Comment $comment
-     * @param CommentId $parentCommentId Its parent's comment ID
+     * @param CommentId|null $parentCommentId Its parent's comment ID
      * @return CommentId|null
      */
-    public function createComment(Comment $comment, CommentId $parentCommentId) : ?CommentId
+    public function createComment(Comment $comment, ?CommentId $parentCommentId) : ?CommentId
     {
         $commentEloquent = DB::transaction(function () use ($comment, $parentCommentId) {
             $commentEloquent = $this->commentEloquent::create(
