@@ -17,8 +17,13 @@ class TodoController extends Controller
     /** @var TodoRepositoryInterface */
     private $todoRepositoryInterface;
 
+    /**
+     * constructor
+     *
+     * @param TodoRepositoryInterface $todoRepositoryInterface
+     */
     public function __construct(
-        todoRepositoryInterface $todoRepositoryInterface
+        TodoRepositoryInterface $todoRepositoryInterface
     )
     {
         $this->todoRepositoryInterface = $todoRepositoryInterface;

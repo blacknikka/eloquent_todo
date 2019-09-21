@@ -30,3 +30,23 @@ Route::group(
         ->name('createTodo');
     }
 );
+
+// todo
+Route::group(
+    [
+        'prefix' => 'v1/comment',
+    ],
+    function () {
+        Route::get(
+            '/{todo_id}',
+            'Todo\CommentController@getCommentsByTodoId'
+        )
+        ->name('getCommentsByTodoId');
+
+        Route::post(
+            '/{todo_id}/comment/{comment_id}',
+            'Todo\CommentController@createCommentToComment'
+        )
+        ->name('createCommentToComment');
+    }
+);

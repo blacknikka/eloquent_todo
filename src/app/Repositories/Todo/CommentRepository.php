@@ -73,6 +73,28 @@ class CommentRepository implements CommentRepositoryInterface
     }
 
     /**
+     * get comments by Todo id.
+     *
+     * @param TodoId $todoId
+     * @return Collection
+     */
+    public function getCommentsFromTodoId(TodoId $todoId) : Collection
+    {
+        $comments = $this->commentEloquent::where('todo_id', $todoId->getId())
+            ->get();
+
+        return $comments->map(
+            function ($comment) {
+                return new Comment(
+                    new UserId($comment->user_id),
+                    new TodoId($comment->todo_id),
+                    $comment->comment
+                );
+            }
+        );
+    }
+
+    /**
      * Comment idに紐づいたコメント一覧を取得する
      *
      * @param CommentId $commentId
