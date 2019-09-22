@@ -133,7 +133,7 @@ class UserRepositoryTest extends TestCase
 
         $token = $this->sut->updateApiToken(new UserId($user->id));
         $this->assertTrue($token !== '');
-        $this->assertSame(strlen($token), 60);
+        $this->assertSame(strlen($token), 64);
     }
 
     /** @test */
@@ -158,7 +158,7 @@ class UserRepositoryTest extends TestCase
         $prevToken = $user->api_token;
         $afterToken = $this->sut->updateApiToken(new UserId($user->id));
 
-        $this->assertSame(strlen($afterToken), 60);
+        $this->assertSame(strlen($afterToken), 64);
         $this->assertTrue($prevToken !== $afterToken);
     }
 }

@@ -49,7 +49,7 @@ class UserRepository implements UserRepositoryInterface
                 'name' => $user->getName(),
                 'email' => $user->getEmail(),
                 'password' => $user->getPassword(),
-                'api_token' => Str::random(60),
+                'api_token' => $this->MakeHashedToken(),
             ]
         );
 
@@ -114,16 +114,28 @@ class UserRepository implements UserRepositoryInterface
             return null;
         }
 
-        // tokenを作成
-        $token = Str::random(60);
+        $token = $this->MakeHashedToken();
 
         // hashにして格納
         $user->forceFill(
             [
-                'api_token' => hash('sha256', $token),
+                'api_token' => $token,
             ]
         )->save();
 
         return $token;
+    }
+
+    /**
+     * Hashされたtokenを作成する
+     *
+     * @return string
+     */
+    private function MakeHashedToken() : string
+    {
+        // tokenを作成
+        $token = Str::random(60);
+
+        return hash('sha256', $token);
     }
 }
