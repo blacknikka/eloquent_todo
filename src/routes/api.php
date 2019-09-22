@@ -17,6 +17,17 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::group(
+    [
+        'prefix' => 'v1/token',
+        'middleware' => 'auth:api',
+    ],
+    function () {
+        Route::post('/update', 'ApiTokenController@updateApiToken')
+        ->name('updateApiToken');
+    }
+);
+
 // todo
 Route::group(
     [
