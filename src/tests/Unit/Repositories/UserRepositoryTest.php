@@ -122,4 +122,43 @@ class UserRepositoryTest extends TestCase
         $this->userEloquentMock
             ->shouldHaveReceived('where');
     }
+
+    /** @test */
+    public function updateApiToken_正常系()
+    {
+        $user = factory(UserEloquent::class)->create();
+        $this->userEloquentMock
+            ->shouldReceive('find')
+            ->andReturn($user);
+
+        $token = $this->sut->updateApiToken(new UserId($user->id));
+        $this->assertTrue($token !== '');
+        $this->assertSame(strlen($token), 60);
+    }
+
+    /** @test */
+    public function updateApiToken_UserNotFound()
+    {
+        $this->userEloquentMock
+            ->shouldReceive('find')
+            ->andReturn(null);
+
+        $token = $this->sut->updateApiToken(new UserId(1));
+        $this->assertNull($token);
+    }
+
+    /** @test */
+    public function updateApiToken_tokenが更新されていること()
+    {
+        // ここは本物のDBでテストしたい
+        app()->instance(UserEloquent::class, new UserEloquent);
+        $this->sut = app()->make(UserRepository::class);
+
+        $user = factory(UserEloquent::class)->create();
+        $prevToken = $user->api_token;
+        $afterToken = $this->sut->updateApiToken(new UserId($user->id));
+
+        $this->assertSame(strlen($afterToken), 60);
+        $this->assertTrue($prevToken !== $afterToken);
+    }
 }

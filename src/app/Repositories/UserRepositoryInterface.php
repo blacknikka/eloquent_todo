@@ -25,4 +25,12 @@ interface UserRepositoryInterface
      * @return User|null
      */
     public function findByUserId(UserId $id) : ?User;
+
+    /**
+     * Apiトークンを更新
+     *
+     * @param UserId $id
+     * @return string|null
+     */
+    public function updateApiToken(UserId $id) : ?string;
 }
