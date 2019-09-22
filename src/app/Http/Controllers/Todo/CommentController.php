@@ -57,18 +57,31 @@ class CommentController extends Controller
      * @param CreateCommentToCommentRequest $request
      * @return JsonResponse
      */
-    public function createCommentToComment(CreateCommentToCommentRequest $request) : JsonResponse
+    public function createCommentToComment(
+        CreateCommentToCommentRequest $request,
+        $todo_id,
+        $comment_id
+    ) : JsonResponse
     {
         // user
         $user_id = Auth::id();
 
-        $todo_id = $request->input('todo_id');
-        $comment_id = $request->input('comment_id');
+        if (is_null($user_id)) {
+            return response()->json(
+                [
+                    'result' => false,
+                    'id' => null,
+                    'message' => "user isn't authenticated.",
+                ]
+            );
+        }
+
+        // input (posted json content.)
         $comment = $request->input('comment');
 
         $createdComment = $this->commentRepositoryInterface->createComment(
             new Comment(
-                new UserId($user_id),
+                new UserId((int)$user_id),
                 new TodoId((int)$todo_id),
                 $comment
             ),

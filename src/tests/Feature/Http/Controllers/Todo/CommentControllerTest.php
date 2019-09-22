@@ -2,17 +2,20 @@
 
 namespace Tests\Feature\Http\Controllers\Todo;
 
+use App\Infrastructure\Eloquent\UserEloquent;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Repositories\Todo\TodoRepository;
 use App\Repositories\Todo\CommentRepository;
 use App\Models\Todo\Comment;
+use App\Models\Todo\CommentId;
 use App\Models\Todo\Todo;
 use App\Models\Todo\TodoId;
 use App\Models\User\UserId;
 use Mockery;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
+use Illuminate\Support\Facades\Auth;
 
 class CommentControllerTest extends TestCase
 {
@@ -110,6 +113,135 @@ class CommentControllerTest extends TestCase
             ->with(
                 \Hamcrest\Matchers::equalTo(
                     new TodoId(1)
+                )
+            );
+    }
+
+    /** @test */
+    public function createCommentToComment_user非認証()
+    {
+        // user非認証
+        $response = $this->postJson(
+            route(
+                'createCommentToComment',
+                [
+                    'todo_id' => 1,
+                    'comment_id' => 2,
+                ]
+            ),
+            [
+                'comment' => 'comment',
+            ]
+        );
+
+        $response->assertStatus(200);
+        $response->assertExactJson(
+            [
+                'result' => false,
+                'id' => null,
+                'message' => "user isn't authenticated.",
+            ]
+        );
+    }
+
+    /** @test */
+    public function createCommentToComment_createCommentがnull返却()
+    {
+        $this->commentRepositoryMock
+            ->shouldReceive('createComment')
+            ->once()
+            ->andReturn(null);
+
+        $user = factory(UserEloquent::class)->create();
+        // loginしたことにする
+        $this->actingAs($user);
+        $this->assertTrue(Auth::check());
+
+        $response = $this->postJson(
+            route(
+                'createCommentToComment',
+                [
+                    'todo_id' => 1,
+                    'comment_id' => 2,
+                ]
+            ),
+            [
+                'comment' => 'comment',
+            ]
+        );
+
+        $response->assertStatus(200);
+        $response->assertExactJson(
+            [
+                'result' => false,
+                'id' => null,
+            ]
+        );
+
+        $this->commentRepositoryMock
+            ->shouldHaveReceived('createComment')
+            ->with(
+                \Hamcrest\Matchers::equalTo(
+                    new Comment(
+                        new UserId($user->id),
+                        new TodoId(1),
+                        'comment'
+                    )
+                ),
+                \Hamcrest\Matchers::equalTo(
+                    new CommentId(2)
+                )
+            );
+    }
+
+    /** @test */
+    public function createCommentToComment_createCommentが正常値返却()
+    {
+        $this->commentRepositoryMock
+            ->shouldReceive('createComment')
+            ->once()
+            ->andReturn(new CommentId(2));
+
+        $user = factory(UserEloquent::class)->create();
+        // loginしたことにする
+        $this->actingAs($user);
+        $this->assertTrue(Auth::check());
+
+        $response = $this->postJson(
+            route(
+                'createCommentToComment',
+                [
+                    'todo_id' => 1,
+                    'comment_id' => 2,
+                ]
+            ),
+            [
+                'comment' => 'comment',
+            ]
+        );
+
+        $response->assertStatus(200);
+        $response->assertExactJson(
+            [
+                'result' => true,
+                'id' => [
+                    'id' => 2,
+                ],
+            ]
+        );
+
+        $this->commentRepositoryMock
+            ->shouldHaveReceived('createComment')
+            ->with(
+                \Hamcrest\Matchers::equalTo(
+                    new Comment(
+                        new UserId($user->id),
+                        new TodoId(1),
+                        'comment'
+                    )
+                ),
+                \Hamcrest\Matchers::equalTo(
+                    new CommentId(2)
                 )
             );
     }
