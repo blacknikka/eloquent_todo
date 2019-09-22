@@ -42,10 +42,10 @@ class CommentRepository implements CommentRepositoryInterface
      * Tree path is also added.
      *
      * @param Comment $comment
-     * @param CommentId $parentCommentId Its parent's comment ID
+     * @param CommentId|null $parentCommentId Its parent's comment ID
      * @return CommentId|null
      */
-    public function createComment(Comment $comment, CommentId $parentCommentId) : ?CommentId
+    public function createComment(Comment $comment, ?CommentId $parentCommentId) : ?CommentId
     {
         $commentEloquent = DB::transaction(function () use ($comment, $parentCommentId) {
             $commentEloquent = $this->commentEloquent::create(
@@ -70,6 +70,28 @@ class CommentRepository implements CommentRepositoryInterface
         return is_null($commentEloquent->id) ?
             null:
             new CommentId($commentEloquent->id);
+    }
+
+    /**
+     * get comments by Todo id.
+     *
+     * @param TodoId $todoId
+     * @return Collection
+     */
+    public function getCommentsFromTodoId(TodoId $todoId) : Collection
+    {
+        $comments = $this->commentEloquent::where('todo_id', $todoId->getId())
+            ->get();
+
+        return $comments->map(
+            function ($comment) {
+                return new Comment(
+                    new UserId($comment->user_id),
+                    new TodoId($comment->todo_id),
+                    $comment->comment
+                );
+            }
+        );
     }
 
     /**

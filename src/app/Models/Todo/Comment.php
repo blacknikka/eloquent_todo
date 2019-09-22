@@ -75,4 +75,18 @@ class Comment
     {
         return $this->comment;
     }
+
+    /**
+     * to array
+     *
+     * @return array
+     */
+    public function toArray() : array
+    {
+        return [
+            'user_id' => $this->userId->toArray(),
+            'todo_id' => $this->todoId->toArray(),
+            'comment' => $this->comment,
+        ];
+    }
 }

@@ -27,4 +27,16 @@ class CommentId
     {
         return $this->id;
     }
+
+    /**
+     * to array
+     *
+     * @return array
+     */
+    public function toArray() : array
+    {
+        return [
+            'id' => $this->id,
+        ];
+    }
 }

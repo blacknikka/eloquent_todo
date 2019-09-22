@@ -36,7 +36,7 @@ class TodoControllerTest extends TestCase
     }
 
     /** @test */
-    public function get正常系()
+    public function getTodo_正常系()
     {
         $todo = new Todo(
             new UserId(1),
@@ -65,6 +65,39 @@ class TodoControllerTest extends TestCase
             [
                 $todo->toArray()
             ]
+        );
+
+        $this->todoRepositoryMock
+            ->shouldHaveReceived('getTodosByUserId')
+            ->with(
+                \Hamcrest\Matchers::equalTo(
+                    new UserId(1)
+                )
+            );
+    }
+
+    /** @test */
+    public function getTodo_異常系()
+    {
+        $this->todoRepositoryMock
+            ->shouldReceive('getTodosByUserId')
+            ->once()
+            ->andReturn(
+                collect([])
+            );
+
+        $response = $this->getJson(
+            route(
+                'getTodo',
+                [
+                    'id' => 1,
+                ]
+            )
+        );
+
+        $response->assertStatus(200);
+        $response->assertExactJson(
+            []
         );
 
         $this->todoRepositoryMock
@@ -109,6 +142,51 @@ class TodoControllerTest extends TestCase
                     'todo_id' => $todoId->toArray(),
                 ],
                 'message' => 'Todo is made correctly',
+            ]
+        );
+
+        $this->todoRepositoryMock
+            ->shouldHaveReceived('createTodo')
+            ->with(
+                \Hamcrest\Matchers::equalTo(
+                    new Todo(
+                        new UserId(1),
+                        'comment',
+                        'title'
+                    )
+                )
+            );
+    }
+
+    /** @test */
+    public function create_異常系()
+    {
+        $todoId = new TodoId(1);
+
+        $this->todoRepositoryMock
+            ->shouldReceive('createTodo')
+            ->once()
+            ->andReturn(null);
+
+        $response = $this->postJson(
+            route(
+                'createTodo',
+                [
+                    'id' => 1,
+                ]
+            ),
+            [
+                'comment' => 'comment',
+                'title' => 'title',
+            ]
+        );
+
+        $response->assertStatus(200);
+        $response->assertExactJson(
+            [
+                'result' => false,
+                'response' => [],
+                'message' => "This user doesn't exist",
             ]
         );
 
